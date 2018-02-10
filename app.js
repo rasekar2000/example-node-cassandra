@@ -1,12 +1,21 @@
 var express = require('express');
 var fs = require('fs');
-var helenus = require('helenus');
+//var helenus = require('helenus');
 var actions = require('./actions');
-var pool = new helenus.ConnectionPool({
-	hosts      : ['192.168.1.214:9160'],
-	keyspace   : 'ksfabio',
-	timeout    : 3000
+var hostname = process.env.CASSANDRA_HOST; 
+var cassandra = require('cassandra-driver');
+
+// To check the CQL spec in
+// https://stackoverflow.com/questions/31502442/check-cql-version-with-cassandra-and-cqlsh?answertab=active#tab-top 
+
+// To connect to the cqlsh
+// https://docs.datastax.com/en/dse/5.1/cql/cql/cql_reference/cqlsh_commands/cqlsh.html
+
+const pool = new cassandra.Client({ contactPoints: [hostname], keyspace   : 'myspace',
+	timeout    : 6000,
+	cqlVersion : '3.4.4'
 });
+
 pool.on('error', function(err){
 	console.error(err.name, err.message);
 });	
